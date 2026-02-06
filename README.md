@@ -1,6 +1,6 @@
 # FSL LWC Components
 
-Lightning Web Components for Field Service Lightning (FSL) demos. Includes mobile-optimized components for technician workflows and desktop components for asset management.
+Lightning Web Components for Salesforce Field Service demos. Includes mobile-optimized components for technician workflows and desktop components for asset management.
 
 ## Components Overview
 
@@ -339,3 +339,4 @@ fsl-lwc-components/
 ## License
 
 MIT License - Feel free to use and modify for your Salesforce implementations.
+
