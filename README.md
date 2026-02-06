@@ -10,6 +10,7 @@ Lightning Web Components for Salesforce Field Service demos. Includes mobile-opt
 | [cpeProvisioning](#cpeprovisioning) | Mobile | No | Yes | CPE/ONT provisioning workflow |
 | [buildingAssetMap](#buildingassetmap) | Mobile | Yes | Partial | Digital twin floor-by-floor view |
 | [saStatusUpdate](#sastatusupdate) | Mobile | Yes | Yes | SA status workflow with RSO |
+| [orderProgressMobile](#orderprogressmobile) | Mobile | No | Yes | Order orchestration journey view |
 
 ---
 
@@ -247,6 +248,69 @@ ServiceAppointment
 
 ---
 
+### orderProgressMobile
+
+**Purpose:** Shows parent Order's 7-stage orchestration journey from Work Order/Service Appointment context - gives field technicians visibility into where their work fits in the overall order lifecycle
+
+**What it does:**
+- Card-based UI showing all orchestration stages with expand/collapse
+- "You Are Here" indicator highlighting the current stage
+- Dependency badges showing relationships between stages:
+  - "Starts after: [Stage]" for sequential dependencies
+  - "Parallel with: [Task]" for same-start dependencies
+- Progress bar showing overall order completion percentage
+- Expand/collapse all controls for quick navigation
+- Field tech-specific context in each stage detail view
+- Estimated duration and key steps per stage
+
+**Screenshot:**
+<img src="docs/screenshots/order_progress_mobile.png" width="300" alt="Order Progress Mobile">
+
+#### Data Requirements
+
+| Object | Fields Used | Relationships |
+|--------|-------------|---------------|
+| **WorkOrder** | Id, WorkOrderNumber, Subject, COM_Order__c | WO → Order (via COM_Order__c lookup) |
+| **ServiceAppointment** | Id, ParentRecordId | SA → WorkOrder |
+| **Order** | Id, Name, COM_Fulfillment_State__c, COM_Fulfillment_Message__c | Parent order context |
+
+#### Key Relationships
+```
+ServiceAppointment
+└── WorkOrder (ParentRecordId)
+    └── Order (COM_Order__c)
+        └── Account (customer)
+```
+
+#### Orchestration Stages (Hardcoded Demo Data)
+
+| Stage | Name | Status in Demo |
+|-------|------|----------------|
+| 1 | Order Intake | Completed |
+| 2 | Design & Planning | Completed |
+| 3 | Procurement | Completed |
+| 4 | Construction | Completed |
+| 5 | Field Installation | In Progress (Current) |
+| 6 | Testing & Turnup | Pending |
+| 7 | Billing Activation | Pending |
+
+#### Demo Data Note
+This component uses **hardcoded orchestration stages** for the Haven Enterprises SASE circuit order demo. The 7 stages match the demo story flow from order intake through billing activation. To customize for different orchestration journeys:
+
+1. Modify `ORCHESTRATION_STAGES` constant in `orderProgressMobile.js`
+2. Update `CURRENT_STAGE` to set the active stage
+
+**Special Features:**
+- **Offline Capable:** Uses GraphQL wire adapters for offline support
+- **Mobile Optimized:** Card-based design with touch-friendly expand/collapse
+- **Context Aware:** Shows different info based on Work Order or Service Appointment context
+
+**Apex Controller:** None (pure LWC with GraphQL)
+
+**Page Placement:** WorkOrder or ServiceAppointment Quick Action (mobile)
+
+---
+
 ## Post-Deployment Configuration
 
 ### 1. Add Components to Lightning Pages
@@ -257,6 +321,7 @@ ServiceAppointment
 | cpeProvisioning | SA Quick Action | Setup → Object Manager → Service Appointment → Buttons, Links, Actions |
 | buildingAssetMap | WO Quick Action | Setup → Object Manager → Work Order → Buttons, Links, Actions |
 | saStatusUpdate | SA Quick Action | Setup → Object Manager → Service Appointment → Buttons, Links, Actions |
+| orderProgressMobile | WO/SA Quick Action | Setup → Object Manager → Work Order or Service Appointment → Buttons, Links, Actions |
 
 ### 2. FSL Configuration (for saStatusUpdate)
 
@@ -300,7 +365,8 @@ fsl-lwc-components/
 │       ├── predictive-maintenance.png
 │       ├── cpe-provisioning.png
 │       ├── building-asset-map.png
-│       └── sa-status-update.png
+│       ├── sa-status-update.png
+│       └── order_progress_mobile.png
 └── force-app/main/default/
     ├── classes/
     │   ├── BuildingAssetMapController.cls
@@ -309,11 +375,15 @@ fsl-lwc-components/
     │   ├── PredictiveMaintenanceController.cls-meta.xml
     │   ├── SAStatusUpdateController.cls
     │   └── SAStatusUpdateController.cls-meta.xml
-    └── lwc/
-        ├── buildingAssetMap/
-        ├── cpeProvisioning/
-        ├── predictiveMaintenance/
-        └── saStatusUpdate/
+    ├── lwc/
+    │   ├── buildingAssetMap/
+    │   ├── cpeProvisioning/
+    │   ├── orderProgressMobile/
+    │   ├── predictiveMaintenance/
+    │   └── saStatusUpdate/
+    └── quickActions/
+        ├── ServiceAppointment.Order_Progress.quickAction-meta.xml
+        └── WorkOrder.Order_Progress.quickAction-meta.xml
 ```
 
 ---

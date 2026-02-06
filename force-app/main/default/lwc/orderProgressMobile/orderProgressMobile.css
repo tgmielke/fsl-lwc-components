@@ -1,0 +1,421 @@
+/* Order Progress Mobile - Card-based mobile-responsive layout */
+
+/* Container */
+.order-progress-container {
+    padding: 0;
+    background: #f3f3f3;
+    min-height: 100%;
+}
+
+/* Header */
+.progress-header {
+    background: linear-gradient(135deg, #0070d2 0%, #1b5297 100%);
+    color: white;
+    padding: 16px;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.header-icon {
+    --slds-c-icon-color-foreground-default: white;
+    margin-right: 8px;
+}
+
+.title-text {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.order-info {
+    margin-top: 8px;
+}
+
+.order-name {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.95;
+}
+
+.account-name {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Progress Summary */
+.progress-summary {
+    background: white;
+    padding: 16px;
+    margin: 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-label {
+    font-size: 12px;
+    color: #706e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-percent {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0070d2;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #04844b 0%, #0070d2 100%);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.current-stage-indicator {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #0070d2;
+    font-weight: 500;
+}
+
+.pin-icon {
+    --slds-c-icon-color-foreground-default: #0070d2;
+    margin-right: 6px;
+}
+
+/* Stage Controls */
+.stage-controls {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 12px;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+.control-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #706e6b;
+    cursor: pointer;
+}
+
+.control-button:active {
+    background: #f3f3f3;
+}
+
+/* Stages Container */
+.stages-container {
+    padding: 0 12px 12px;
+}
+
+/* Stage Card */
+.stage-card {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.stage-card.current-stage {
+    border-left: 4px solid #0070d2;
+    box-shadow: 0 2px 8px rgba(0,112,210,0.15);
+}
+
+.stage-card.stage-completed {
+    border-left: 4px solid #04844b;
+}
+
+.stage-card.stage-pending {
+    border-left: 4px solid #dddbda;
+    opacity: 0.85;
+}
+
+/* Card Header */
+.stage-card-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
+    cursor: pointer;
+}
+
+.stage-card-header:active {
+    background: #fafafa;
+}
+
+.stage-status-indicator {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.stage-completed .stage-status-indicator {
+    background: #e8f5e9;
+}
+
+.stage-completed .stage-status-indicator lightning-icon {
+    --slds-c-icon-color-foreground-default: #04844b;
+}
+
+.stage-current .stage-status-indicator {
+    background: #e3f2fd;
+    animation: pulse 2s infinite;
+}
+
+.stage-current .stage-status-indicator lightning-icon {
+    --slds-c-icon-color-foreground-default: #0070d2;
+}
+
+.stage-pending .stage-status-indicator {
+    background: #f5f5f5;
+}
+
+.stage-pending .stage-status-indicator lightning-icon {
+    --slds-c-icon-color-foreground-default: #b0adab;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 112, 210, 0.3); }
+    70% { box-shadow: 0 0 0 8px rgba(0, 112, 210, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 112, 210, 0); }
+}
+
+.stage-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.stage-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.stage-number {
+    font-size: 11px;
+    color: #706e6b;
+    text-transform: uppercase;
+}
+
+.stage-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #181818;
+}
+
+.stage-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.stage-completed .status-badge {
+    background: #e8f5e9;
+    color: #04844b;
+}
+
+.stage-current .status-badge {
+    background: #e3f2fd;
+    color: #0070d2;
+}
+
+.stage-pending .status-badge {
+    background: #f5f5f5;
+    color: #706e6b;
+}
+
+.badge-you-are-here {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #0070d2;
+    color: white;
+}
+
+.stage-chevron {
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.stage-chevron lightning-icon {
+    --slds-c-icon-color-foreground-default: #b0adab;
+}
+
+/* Dependency Badges */
+.dependency-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 12px 10px;
+}
+
+.badge-dependency {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-dependency lightning-icon {
+    --slds-c-icon-color-foreground-default: #856404;
+}
+
+.badge-parallel {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.badge-parallel lightning-icon {
+    --slds-c-icon-color-foreground-default: #0c5460;
+}
+
+/* Stage Details (Expanded) */
+.stage-details {
+    padding: 0 12px 14px;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 0;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-section {
+    margin-top: 12px;
+}
+
+.detail-label {
+    font-size: 11px;
+    color: #706e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: #181818;
+}
+
+.detail-value-muted {
+    color: #706e6b;
+    font-style: italic;
+}
+
+/* Field Tech Callout */
+.field-tech-callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #e3f2fd;
+    border-radius: 6px;
+    border-left: 3px solid #0070d2;
+}
+
+.field-tech-callout lightning-icon {
+    --slds-c-icon-color-foreground-default: #0070d2;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.field-tech-callout span {
+    font-size: 13px;
+    color: #0070d2;
+    font-weight: 500;
+}
+
+/* Steps */
+.steps-section {
+    margin-top: 12px;
+}
+
+.steps-list {
+    margin-top: 6px;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.step-complete lightning-icon {
+    --slds-c-icon-color-foreground-default: #04844b;
+}
+
+.step-pending lightning-icon {
+    --slds-c-icon-color-foreground-default: #b0adab;
+}
+
+.step-name {
+    font-size: 13px;
+    color: #3e3e3c;
+}
+
+/* Footer */
+.progress-footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 12px;
+    color: #706e6b;
+    border-top: 1px solid #e5e5e5;
+    background: white;
+}

@@ -1,0 +1,154 @@
+<template>
+    <div class="order-progress-container">
+        <!-- Header -->
+        <div class="progress-header">
+            <div class="header-title">
+                <lightning-icon icon-name="utility:flow" size="small" class="header-icon"></lightning-icon>
+                <span class="title-text">Order Progress</span>
+            </div>
+            <template lwc:if={hasParentOrder}>
+                <div class="order-info">
+                    <div class="order-name">{orderName}</div>
+                    <div class="account-name">{accountName}</div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-summary">
+            <div class="progress-row">
+                <span class="progress-label">Overall Progress</span>
+                <span class="progress-percent">{progressPercentage}%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style={progressStyle}></div>
+            </div>
+            <div class="current-stage-indicator">
+                <lightning-icon icon-name="utility:pinned" size="xx-small" class="pin-icon"></lightning-icon>
+                <span>Currently: Stage {currentStageNumber} - {currentStageName}</span>
+            </div>
+        </div>
+
+        <!-- Expand/Collapse Controls -->
+        <div class="stage-controls">
+            <button class="control-button" onclick={handleExpandAll}>
+                <lightning-icon icon-name="utility:expand_all" size="xx-small"></lightning-icon>
+                <span>Expand All</span>
+            </button>
+            <button class="control-button" onclick={handleCollapseAll}>
+                <lightning-icon icon-name="utility:collapse_all" size="xx-small"></lightning-icon>
+                <span>Collapse</span>
+            </button>
+        </div>
+
+        <!-- Stage Cards -->
+        <div class="stages-container">
+            <template for:each={stages} for:item="stage">
+                <div key={stage.stageKey} class={stage.cardClass}>
+                    <!-- Card Header (Clickable) -->
+                    <div class="stage-card-header" data-stage={stage.stage} onclick={handleStageClick}>
+                        <div class="stage-status-indicator">
+                            <lightning-icon icon-name={stage.statusIcon} size="x-small" class={stage.statusClass}></lightning-icon>
+                        </div>
+                        <div class="stage-info">
+                            <div class="stage-title">
+                                <span class="stage-number">Stage {stage.stage}</span>
+                                <span class="stage-name">{stage.name}</span>
+                            </div>
+                            <div class="stage-badges">
+                                <!-- Status Badge -->
+                                <span class={stage.statusBadgeClass}>{stage.statusLabel}</span>
+
+                                <!-- Current Stage Badge -->
+                                <template lwc:if={stage.isCurrent}>
+                                    <span class="badge-you-are-here">You Are Here</span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="stage-chevron">
+                            <lightning-icon icon-name={stage.chevronIcon} size="x-small"></lightning-icon>
+                        </div>
+                    </div>
+
+                    <!-- Dependency Badges (Always Visible) -->
+                    <template lwc:if={stage.hasDependencies}>
+                        <div class="dependency-badges">
+                            <template for:each={stage.dependencies} for:item="dep">
+                                <span key={dep.label} class="badge-dependency">
+                                    <lightning-icon icon-name="utility:link" size="xx-small"></lightning-icon>
+                                    After: {dep.label}
+                                </span>
+                            </template>
+                        </div>
+                    </template>
+                    <template lwc:if={stage.hasParallel}>
+                        <div class="dependency-badges">
+                            <template for:each={stage.parallelWith} for:item="parallel">
+                                <span key={parallel.label} class="badge-parallel">
+                                    <lightning-icon icon-name="utility:switch" size="xx-small"></lightning-icon>
+                                    Parallel: {parallel.label}
+                                </span>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Expanded Content -->
+                    <template lwc:if={stage.isExpanded}>
+                        <div class="stage-details">
+                            <div class="detail-section">
+                                <div class="detail-label">Description</div>
+                                <div class="detail-value">{stage.description}</div>
+                            </div>
+
+                            <div class="detail-section">
+                                <div class="detail-label">Est. Duration</div>
+                                <div class="detail-value">{stage.estimatedDuration}</div>
+                            </div>
+
+                            <!-- Field Tech Info (Highlighted for current stage) -->
+                            <template lwc:if={stage.isCurrent}>
+                                <div class="field-tech-callout">
+                                    <lightning-icon icon-name="utility:info_alt" size="x-small"></lightning-icon>
+                                    <span>{stage.fieldTechInfo}</span>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                <div class="detail-section">
+                                    <div class="detail-label">Notes</div>
+                                    <div class="detail-value detail-value-muted">{stage.fieldTechInfo}</div>
+                                </div>
+                            </template>
+
+                            <!-- Steps -->
+                            <div class="steps-section">
+                                <div class="detail-label">Steps</div>
+                                <div class="steps-list">
+                                    <template for:each={stage.formattedSteps} for:item="step">
+                                        <div key={step.stepKey} class="step-item">
+                                            <lightning-icon
+                                                icon-name={step.stepIcon}
+                                                size="xx-small"
+                                                class={step.stepClass}>
+                                            </lightning-icon>
+                                            <span class="step-name">{step.name}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <!-- Footer -->
+        <div class="progress-footer">
+            <template lwc:if={showHavenBranding}>
+                Enterprise SASE Circuit Installation
+            </template>
+            <template lwc:else>
+                Order Fulfillment Journey
+            </template>
+        </div>
+    </div>
+</template>
