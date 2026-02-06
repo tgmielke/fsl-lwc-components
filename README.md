@@ -54,7 +54,7 @@ sf project deploy start --target-org my-org
 - Action button: "Add Preventive Work" - creates a 7-step inspection Work Plan on an upcoming Work Order
 
 **Screenshot:**
-![Predictive Maintenance](docs/screenshots/predictive-maintenance.png)
+<img src="docs/screenshots/predictive-maintenance.png" width="500" alt="Predictive Maintenance">
 
 #### Data Requirements
 
@@ -106,7 +106,7 @@ For the component to function properly, create:
 - ADAPT system status indicators (Disconnected → Connected → Provisioned → Activated)
 
 **Screenshot:**
-![CPE Provisioning](docs/screenshots/cpe-provisioning.png)
+<img src="docs/screenshots/cpe-provisioning.png" width="300" alt="CPE Provisioning">
 
 #### Data Requirements
 
@@ -160,7 +160,7 @@ ServiceAppointment
 - Action: "Add Inspection Work Plan" for assets with warning conditions
 
 **Screenshot:**
-![Building Asset Map](docs/screenshots/building-asset-map.png)
+<img src="docs/screenshots/building-asset-map.png" width="300" alt="Building Asset Map">
 
 #### Data Requirements
 
@@ -207,7 +207,7 @@ This component uses **hardcoded demo data** for the Haven Enterprises Bellevue D
 - Posts to Chatter when appointments are blocked
 
 **Screenshot:**
-![SA Status Update](docs/screenshots/sa-status-update.png)
+<img src="docs/screenshots/sa-status-update.png" width="300" alt="SA Status Update">
 
 #### Data Requirements
 
