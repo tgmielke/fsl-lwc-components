@@ -1,0 +1,173 @@
+<template>
+    <div class="status-container">
+        <!-- Header -->
+        <div class="status-header">
+            <div class="header-left">
+                <lightning-icon icon-name="utility:clock" size="small"></lightning-icon>
+                <span class="header-title">Status Update</span>
+            </div>
+            <div class="header-right">
+                <lightning-button-icon
+                    icon-name="utility:close"
+                    alternative-text="Close"
+                    onclick={handleClose}
+                    variant="bare">
+                </lightning-button-icon>
+            </div>
+        </div>
+
+        <div class="status-body">
+            <!-- Appointment Info -->
+            <div class="info-section">
+                <div class="info-row">
+                    <lightning-icon icon-name="standard:service_appointment" size="x-small"></lightning-icon>
+                    <span class="info-label">{appointmentNumber}</span>
+                </div>
+                <div class="info-detail">
+                    <span class="detail-item">
+                        <lightning-icon icon-name="utility:company" size="xx-small"></lightning-icon>
+                        {accountName}
+                    </span>
+                    <span class="detail-item">
+                        <lightning-icon icon-name="utility:location" size="xx-small"></lightning-icon>
+                        {territoryName}
+                    </span>
+                </div>
+                <div class="info-detail">
+                    <span class="detail-item">
+                        <lightning-icon icon-name="utility:event" size="xx-small"></lightning-icon>
+                        {scheduledTime}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Current Status -->
+            <div class="current-status-section">
+                <div class="status-label">Current Status</div>
+                <div class="status-badge">
+                    <lightning-icon icon-name={statusIcon} size="small"></lightning-icon>
+                    <span style={statusColor}>{currentStatus}</span>
+                </div>
+                <template if:true={hasDependency}>
+                    <div class="dependency-badge">
+                        <lightning-icon icon-name="utility:link" size="xx-small"></lightning-icon>
+                        <span>{dependencyType}</span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Next Status Actions -->
+            <template if:true={canUpdateStatus}>
+                <div class="action-section">
+                    <div class="action-label">Update Status</div>
+                    <div class="status-buttons">
+                        <template for:each={nextStatusOptions} for:item="option">
+                            <lightning-button
+                                key={option.value}
+                                label={option.label}
+                                data-status={option.value}
+                                onclick={handleStatusUpdate}
+                                variant={option.variant}
+                                disabled={isProcessing}
+                                icon-name={option.icon}
+                                class="status-btn">
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Block Button -->
+            <template if:true={showBlockButton}>
+                <div class="block-section">
+                    <lightning-button
+                        label="Report Blocked"
+                        onclick={handleBlockClick}
+                        variant="destructive"
+                        icon-name="utility:warning"
+                        disabled={isProcessing}
+                        class="block-btn">
+                    </lightning-button>
+                </div>
+            </template>
+
+            <!-- Processing Spinner -->
+            <template if:true={isProcessing}>
+                <div class="spinner-container">
+                    <lightning-spinner alternative-text="Processing" size="small"></lightning-spinner>
+                </div>
+            </template>
+        </div>
+
+        <!-- Block Modal -->
+        <template if:true={showBlockModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={handleCloseBlockModal}>
+                            <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                        </button>
+                        <h2 class="slds-modal__title">Report Blocked Appointment</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <!-- Warning about dependencies -->
+                        <template if:true={showDependencyWarning}>
+                            <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_medium" role="alert">
+                                <lightning-icon icon-name="utility:warning" size="x-small" variant="warning"></lightning-icon>
+                                <span class="slds-m-left_x-small">
+                                    This appointment has <strong>{dependentAppointments.length}</strong> dependent appointment(s).
+                                    RSO will be triggered for all affected resources.
+                                </span>
+                            </div>
+                            <div class="dependent-list slds-m-bottom_medium">
+                                <template for:each={dependentAppointments} for:item="dep">
+                                    <div key={dep.Id} class="dependent-item">
+                                        <lightning-icon icon-name="utility:link" size="xx-small"></lightning-icon>
+                                        <span>{dep.AppointmentNumber} - {dep.ResourceName}</span>
+                                        <span class="dep-date">{dep.ScheduledDate}</span>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- Block Reason Selection -->
+                        <lightning-combobox
+                            name="blockReason"
+                            label="Block Reason"
+                            value={blockReason}
+                            placeholder="Select a reason..."
+                            options={blockReasons}
+                            onchange={handleBlockReasonChange}
+                            required>
+                        </lightning-combobox>
+
+                        <!-- Additional Notes -->
+                        <div class="slds-m-top_medium">
+                            <lightning-textarea
+                                name="blockNotes"
+                                label="Additional Notes"
+                                value={blockNotes}
+                                onchange={handleBlockNotesChange}
+                                placeholder="Enter any additional details..."
+                                max-length="500">
+                            </lightning-textarea>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button
+                            label="Cancel"
+                            onclick={handleCloseBlockModal}>
+                        </lightning-button>
+                        <lightning-button
+                            label="Confirm Block & Trigger RSO"
+                            variant="destructive"
+                            onclick={handleConfirmBlock}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

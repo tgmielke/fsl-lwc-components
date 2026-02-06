@@ -1,0 +1,341 @@
+<template>
+    <lightning-card icon-name="standard:location">
+        <!-- Header -->
+        <span slot="title">
+            Seattle Data Center
+            <lightning-badge label={totalAssetCount} class="slds-m-left_small"></lightning-badge>
+        </span>
+        <div slot="actions">
+            <lightning-button label="Done" onclick={handleClose}></lightning-button>
+        </div>
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <!-- Location Info Banner -->
+            <div class="location-banner slds-m-bottom_small">
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <div>
+                        <p class="slds-text-body_small">{location.address}</p>
+                        <p class="slds-text-body_small slds-text-color_weak">
+                            {location.buildingCode} | {location.tierLevel} | {location.totalSqFt} sq ft
+                        </p>
+                    </div>
+                    <div class="status-summary">
+                        <span class="status-pill active">{activeAssetCount} Active</span>
+                        <template if:true={warningAssetCount}>
+                            <span class="status-pill warning">{warningAssetCount} Warning</span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Toggle -->
+            <div class="view-toggle slds-m-bottom_small">
+                <lightning-button-group>
+                    <lightning-button
+                        label="Assets by Floor"
+                        variant={floorsButtonVariant}
+                        value="floors"
+                        onclick={handleViewChange}>
+                    </lightning-button>
+                    <lightning-button
+                        label="GIS / Map Info"
+                        variant={gisButtonVariant}
+                        value="gis"
+                        onclick={handleViewChange}>
+                    </lightning-button>
+                </lightning-button-group>
+            </div>
+
+            <!-- GIS View - Native Map Integration -->
+            <template if:true={isGisView}>
+                <div class="gis-view">
+                    <!-- Real Map using lightning-map -->
+                    <div class={mapContainerClass}>
+                        <lightning-map
+                            map-markers={mapMarkers}
+                            center={mapCenter}
+                            zoom-level="17"
+                            markers-title="Data Center Assets"
+                            list-view="hidden"
+                            onmarkerselect={handleMarkerSelect}>
+                        </lightning-map>
+
+                        <!-- Layer Controls Overlay -->
+                        <div class={layerControlsClass}>
+                            <div class="layer-header" onclick={handleToggleLayerControls}>
+                                <lightning-icon icon-name={layerToggleIcon} size="xx-small"></lightning-icon>
+                                <lightning-icon icon-name="utility:layers" size="xx-small"></lightning-icon>
+                                <span>Layers</span>
+                            </div>
+                            <template if:true={layerControlsExpanded}>
+                                <div class="layer-items">
+                                    <template for:each={gisLayers} for:item="layer">
+                                        <div key={layer.id} class="layer-item">
+                                            <lightning-input
+                                                type="checkbox"
+                                                label={layer.name}
+                                                checked={layer.visible}
+                                                data-layer={layer.id}
+                                                onchange={handleLayerToggle}
+                                                variant="label-hidden">
+                                            </lightning-input>
+                                            <span class="layer-color" style={layer.colorStyle}></span>
+                                            <span class="layer-name">{layer.name}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Maximize Button -->
+                        <div class="map-maximize-btn">
+                            <lightning-button-icon
+                                icon-name={maximizeIcon}
+                                alternative-text={maximizeLabel}
+                                onclick={handleToggleMapMaximize}
+                                variant="border-filled"
+                                size="small">
+                            </lightning-button-icon>
+                        </div>
+
+                        <!-- Map Instructions Overlay -->
+                        <div class="map-instructions">
+                            <lightning-icon icon-name="utility:touch_action" size="xx-small"></lightning-icon>
+                            <span>Pinch to zoom • Tap marker for details</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Info Bar (hidden when maximized) -->
+                    <template if:false={isMapMaximized}>
+                        <div class="gis-info-bar">
+                            <div class="info-stat">
+                                <span class="stat-value">{location.buildingCode}</span>
+                                <span class="stat-label">Site</span>
+                            </div>
+                            <div class="info-stat">
+                                <span class="stat-value">{totalAssetCount}</span>
+                                <span class="stat-label">Assets</span>
+                            </div>
+                            <div class="info-stat">
+                                <span class="stat-value coord-small">{location.latitude}</span>
+                                <span class="stat-label">Lat</span>
+                            </div>
+                            <div class="info-stat">
+                                <span class="stat-value coord-small">{location.longitude}</span>
+                                <span class="stat-label">Long</span>
+                            </div>
+                        </div>
+
+                        <!-- External Map Links -->
+                        <div class="map-actions-row">
+                            <lightning-button
+                                label="Full ArcGIS View"
+                                icon-name="utility:new_window"
+                                onclick={handleOpenArcGIS}
+                                variant="brand"
+                                class="slds-m-right_x-small">
+                            </lightning-button>
+                            <lightning-button
+                                label="Google Maps"
+                                icon-name="utility:new_window"
+                                onclick={handleOpenGoogleMaps}
+                                variant="neutral">
+                            </lightning-button>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Floors View -->
+            <template if:true={isFloorsView}>
+                <div class="floors-view">
+                    <!-- Floor Accordion -->
+                    <template for:each={assetsByFloor} for:item="floorGroup" for:index="floorIndex">
+                        <div key={floorGroup.floor} class="floor-section slds-m-bottom_x-small">
+                            <!-- Floor Header -->
+                            <div class="floor-header"
+                                 data-index={floorIndex}
+                                 onclick={handleFloorToggle}>
+                                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                        <template if:true={floorGroup.isExpanded}>
+                                            <lightning-icon icon-name="utility:chevrondown" size="x-small" class="slds-m-right_small chevron-icon"></lightning-icon>
+                                        </template>
+                                        <template if:false={floorGroup.isExpanded}>
+                                            <lightning-icon icon-name="utility:chevronright" size="x-small" class="slds-m-right_small chevron-icon"></lightning-icon>
+                                        </template>
+                                        <div>
+                                            <span class="floor-title">{floorGroup.floorLabel}</span>
+                                            <p class="floor-desc slds-text-body_small slds-text-color_weak">{floorGroup.description}</p>
+                                        </div>
+                                    </div>
+                                    <lightning-badge label={floorGroup.assets.length} class="asset-count-badge"></lightning-badge>
+                                </div>
+                            </div>
+
+                            <!-- Floor Assets -->
+                            <template if:true={floorGroup.isExpanded}>
+                                <div class="floor-assets">
+                                    <template for:each={floorGroup.assets} for:item="asset">
+                                        <div key={asset.id}
+                                             class="asset-card"
+                                             data-id={asset.id}
+                                             onclick={handleAssetClick}>
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <div class="asset-icon">
+                                                    <lightning-icon icon-name={asset.iconName} size="small"></lightning-icon>
+                                                </div>
+                                                <div class="asset-info slds-grow">
+                                                    <p class="asset-name">{asset.name}</p>
+                                                    <p class="asset-meta">{asset.type}</p>
+                                                    <p class="asset-location">{asset.room} | {asset.rack}</p>
+                                                </div>
+                                                <div class="asset-status">
+                                                    <span class={asset.statusClass}>{asset.status}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Asset Detail Modal - Digital Twin View -->
+    <template if:true={showAssetDetail}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="Close"
+                        onclick={handleCloseDetail}
+                        class="slds-modal__close">
+                    </lightning-button-icon>
+                    <div class="modal-header-content">
+                        <div class="asset-header-info">
+                            <lightning-icon icon-name={selectedAsset.iconName} size="medium" class="slds-m-right_small"></lightning-icon>
+                            <div>
+                                <h2 class="slds-modal__title">{selectedAsset.name}</h2>
+                                <p class="asset-subtitle">{selectedAsset.manufacturer} {selectedAsset.model}</p>
+                            </div>
+                        </div>
+                        <span class={selectedAsset.statusClass}>{selectedAsset.status}</span>
+                    </div>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Warning Alerts for Out-of-Threshold Attributes -->
+                    <template if:true={selectedAsset.hasWarnings}>
+                        <div class="alert-banner">
+                            <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            <span class="alert-text">Threshold Alerts</span>
+                        </div>
+                        <div class="warning-cards">
+                            <template for:each={selectedAsset.warningAttributes} for:item="warnAttr">
+                                <div key={warnAttr.name} class="warning-card">
+                                    <div class="warning-card-header">
+                                        <lightning-icon icon-name={warnAttr.statusIcon} size="xx-small" class={warnAttr.statusClass}></lightning-icon>
+                                        <span class="warning-attr-name">{warnAttr.name}</span>
+                                    </div>
+                                    <div class="warning-card-body">
+                                        <span class="warning-value">{warnAttr.displayValue}</span>
+                                        <span class="warning-threshold">Threshold: {warnAttr.thresholdDisplay}</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Asset Info Summary -->
+                    <div class="asset-info-summary">
+                        <div class="info-chip">
+                            <lightning-icon icon-name="utility:location" size="xx-small"></lightning-icon>
+                            <span>{selectedAsset.room}</span>
+                        </div>
+                        <div class="info-chip">
+                            <lightning-icon icon-name="utility:layers" size="xx-small"></lightning-icon>
+                            <span>{selectedAsset.rack} - {selectedAsset.position}</span>
+                        </div>
+                        <div class="info-chip">
+                            <lightning-icon icon-name="utility:identity" size="xx-small"></lightning-icon>
+                            <span>{selectedAsset.serialNumber}</span>
+                        </div>
+                        <div class="info-chip">
+                            <lightning-icon icon-name="utility:date_input" size="xx-small"></lightning-icon>
+                            <span>Service: {selectedAsset.lastService}</span>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Data - Grouped by Category -->
+                    <div class="telemetry-section">
+                        <h3 class="telemetry-title">
+                            <lightning-icon icon-name="utility:metrics" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            Asset Attributes
+                        </h3>
+                        <template for:each={groupedAttributes} for:item="group">
+                            <div key={group.name} class="telemetry-group">
+                                <div class="group-header">
+                                    <span class="group-name">{group.name}</span>
+                                    <template if:true={group.hasWarning}>
+                                        <lightning-icon icon-name="utility:warning" size="xx-small" class="group-warning-icon"></lightning-icon>
+                                    </template>
+                                </div>
+                                <div class="attributes-grid">
+                                    <template for:each={group.attributes} for:item="attr">
+                                        <div key={attr.name} class="attribute-card">
+                                            <div class="attr-header">
+                                                <span class="attr-name">{attr.name}</span>
+                                                <lightning-icon icon-name={attr.statusIcon} size="xx-small" class={attr.statusClass}></lightning-icon>
+                                            </div>
+                                            <div class="attr-value-row">
+                                                <span class="attr-value">{attr.displayValue}</span>
+                                            </div>
+                                            <div class="attr-gauge">
+                                                <div class="gauge-track">
+                                                    <div class="gauge-fill" style={attr.gaugeStyle} data-percentage={attr.percentage}></div>
+                                                </div>
+                                                <span class="attr-threshold">{attr.thresholdDisplay}</span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Close" onclick={handleCloseDetail}></lightning-button>
+                    <template if:true={selectedAsset.hasWarnings}>
+                        <template if:false={workPlanCreated}>
+                            <lightning-button
+                                variant="brand"
+                                label="Add Inspection Work Plan"
+                                icon-name="utility:checklist"
+                                onclick={handleAddInspectionWorkPlan}
+                                disabled={isCreatingWorkPlan}
+                                class="slds-m-left_x-small">
+                            </lightning-button>
+                            <template if:true={isCreatingWorkPlan}>
+                                <lightning-spinner alternative-text="Creating..." size="small" class="slds-m-left_small"></lightning-spinner>
+                            </template>
+                        </template>
+                        <template if:true={workPlanCreated}>
+                            <span class="work-plan-success slds-m-left_x-small">
+                                <lightning-icon icon-name="utility:success" size="x-small" variant="success" class="slds-m-right_xx-small"></lightning-icon>
+                                Work Plan Added
+                            </span>
+                        </template>
+                    </template>
+                    <template if:false={selectedAsset.hasWarnings}>
+                        <lightning-button variant="brand" label="Create Work Order" class="slds-m-left_x-small"></lightning-button>
+                    </template>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

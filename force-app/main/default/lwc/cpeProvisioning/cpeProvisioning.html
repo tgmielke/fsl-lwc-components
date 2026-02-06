@@ -1,0 +1,156 @@
+<template>
+    <div class="cpe-container">
+        <!-- Compact Header -->
+        <div class="cpe-header">
+            <div class="header-left">
+                <lightning-icon icon-name="utility:connected_apps" size="small"></lightning-icon>
+                <span class="header-title">CPE Provisioning</span>
+            </div>
+            <div class="header-right">
+                <lightning-badge label={adaptStatus} class={adaptStatusClass}></lightning-badge>
+                <lightning-button-icon icon-name="utility:close" alternative-text="Close" onclick={handleClose} variant="bare"></lightning-button-icon>
+            </div>
+        </div>
+
+        <div class="cpe-body">
+            <!-- Compact Step Indicator -->
+            <div class="step-indicator">
+                <span class={step1Class}>1</span>
+                <span class="step-line"></span>
+                <span class={step2Class}>2</span>
+                <span class="step-line"></span>
+                <span class={step3Class}>3</span>
+                <span class="step-line"></span>
+                <span class={step4Class}>4</span>
+            </div>
+
+            <!-- CPE Device Section - Always show scan option -->
+            <div class="cpe-section">
+                <template if:true={showCpeDisplay}>
+                    <div class="cpe-display">
+                        <lightning-icon icon-name="standard:asset_object" size="x-small"></lightning-icon>
+                        <span class="cpe-serial">{displaySerialNumber}</span>
+                        <lightning-button-icon
+                            icon-name="utility:change_record_type"
+                            alternative-text="Change CPE"
+                            onclick={handleChangeCpe}
+                            variant="bare"
+                            class="change-cpe-btn"
+                            disabled={isProcessing}>
+                        </lightning-button-icon>
+                    </div>
+                </template>
+                <template if:false={showCpeDisplay}>
+                    <div class="scan-row">
+                        <lightning-input
+                            type="text"
+                            placeholder="Serial # or scan"
+                            value={manualSerialNumber}
+                            onchange={handleManualSerialChange}
+                            variant="label-hidden"
+                            class="scan-input">
+                        </lightning-input>
+                        <lightning-button-icon
+                            icon-name="utility:scan"
+                            alternative-text="Scan"
+                            onclick={handleScanBarcode}
+                            variant="brand">
+                        </lightning-button-icon>
+                        <lightning-button
+                            label="Set"
+                            onclick={handleUseManualSerial}
+                            variant="brand"
+                            disabled={isManualSerialEmpty}>
+                        </lightning-button>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Step 1: Connect to ADAPT -->
+            <template if:true={isStep1}>
+                <div class="action-box">
+                    <lightning-button
+                        variant="brand"
+                        label="Connect to ADAPT"
+                        onclick={handleStartProvisioning}
+                        disabled={disableStartProvisioning}
+                        class="full-width-btn">
+                    </lightning-button>
+                    <template if:true={isProcessing}>
+                        <lightning-spinner alternative-text="Processing" size="small" class="spinner-inline"></lightning-spinner>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Step 2: Validate & Provision -->
+            <template if:true={isStep2}>
+                <div class="action-box">
+                    <lightning-button
+                        variant="brand"
+                        label="Validate & Provision CPE"
+                        onclick={handleStep2Actions}
+                        disabled={isProcessing}
+                        class="full-width-btn">
+                    </lightning-button>
+                    <template if:true={isProcessing}>
+                        <lightning-spinner alternative-text="Processing" size="small" class="spinner-inline"></lightning-spinner>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Step 3: Signal Test & Activate -->
+            <template if:true={isStep3}>
+                <template if:true={signalStrength}>
+                    <div class="signal-box">
+                        <span class="signal-item"><b>Signal:</b> <span class={signalClass}>{signalStrength}</span></span>
+                        <span class="signal-item"><b>Power:</b> {opticalPower}</span>
+                        <span class="signal-item"><b>Speed:</b> {connectionSpeed}</span>
+                    </div>
+                </template>
+                <div class="action-box two-buttons">
+                    <lightning-button
+                        variant="neutral"
+                        label="Signal Test"
+                        onclick={handleRunSignalTest}
+                        disabled={isProcessing}>
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Activate Service"
+                        onclick={handleActivate}
+                        disabled={isProcessing}>
+                    </lightning-button>
+                    <template if:true={isProcessing}>
+                        <lightning-spinner alternative-text="Processing" size="small" class="spinner-inline"></lightning-spinner>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Step 4: Complete -->
+            <template if:true={isStep4}>
+                <div class="complete-box">
+                    <div class="complete-icon">
+                        <lightning-icon icon-name="action:approval" size="large"></lightning-icon>
+                    </div>
+                    <div class="complete-text">
+                        <h2>PROVISIONING COMPLETE</h2>
+                        <p>CPE provisioned and service activated</p>
+                    </div>
+                    <lightning-button variant="brand" label="Done" onclick={handleClose}></lightning-button>
+                </div>
+            </template>
+
+            <!-- Compact Log -->
+            <template if:true={provisioningLog.length}>
+                <div class="log-box">
+                    <template for:each={provisioningLog} for:item="log">
+                        <div key={log.id} class="log-line">
+                            <span class="log-ts">{log.timestamp}</span>
+                            <span class="log-msg">{log.message}</span>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

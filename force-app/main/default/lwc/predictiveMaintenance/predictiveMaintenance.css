@@ -1,0 +1,346 @@
+/* Risk Banner */
+.risk-banner {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.risk-banner.high-risk {
+    background: linear-gradient(135deg, #ba0517 0%, #8e0311 100%);
+    color: white;
+}
+
+/* Summary Grid */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f3f3f3;
+    border-radius: 0.5rem;
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    color: #706e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-bottom: 0.5rem;
+}
+
+/* Health Score */
+.health-score {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.health-score-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.health-score-label {
+    font-size: 0.875rem;
+    color: #706e6b;
+}
+
+.health-score.critical .health-score-value {
+    color: #ba0517;
+}
+
+.health-score.warning .health-score-value {
+    color: #fe9339;
+}
+
+.health-score.good .health-score-value {
+    color: #2e844a;
+}
+
+/* Probability */
+.probability-container {
+    padding: 0 0.5rem;
+}
+
+.probability-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.probability-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.probability-bar-container {
+    height: 8px;
+    background-color: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.probability-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.probability-bar.critical {
+    background: linear-gradient(90deg, #fe9339 0%, #ba0517 100%);
+}
+
+.probability-bar.warning {
+    background: linear-gradient(90deg, #f9e07f 0%, #fe9339 100%);
+}
+
+.probability-bar.low {
+    background: linear-gradient(90deg, #91db8b 0%, #2e844a 100%);
+}
+
+/* Predicted Failure Display */
+.predicted-failure-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.days-until-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.days-until-display .days-number {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.days-until-display .days-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.days-until-display.critical {
+    background-color: #fef0f0;
+}
+
+.days-until-display.critical .days-number,
+.days-until-display.critical .days-label {
+    color: #ba0517;
+}
+
+.days-until-display.warning {
+    background-color: #fef8e7;
+}
+
+.days-until-display.warning .days-number,
+.days-until-display.warning .days-label {
+    color: #a96404;
+}
+
+.days-until-display.normal .days-number,
+.days-until-display.normal .days-label {
+    color: #2e844a;
+}
+
+.predicted-date-text {
+    font-size: 0.75rem;
+    color: #706e6b;
+    margin-top: 0.25rem;
+}
+
+/* Recommendation Box */
+.recommendation-box {
+    padding: 1rem;
+    background-color: #f0f7ff;
+    border-left: 4px solid #0070d2;
+    border-radius: 0.25rem;
+}
+
+.recommendation-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    color: #0070d2;
+}
+
+.recommendation-text {
+    font-size: 0.875rem;
+    color: #181818;
+}
+
+/* Telemetry Section */
+.section-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #181818;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.telemetry-item {
+    padding: 0.75rem;
+    background-color: #fafaf9;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.telemetry-item.critical {
+    background-color: #fef0f0;
+    border-color: #ba0517;
+    border-left: 4px solid #ba0517;
+}
+
+.telemetry-item.warning {
+    background-color: #fef8e7;
+    border-color: #fe9339;
+    border-left: 4px solid #fe9339;
+}
+
+.telemetry-item.normal {
+    background-color: #f3faf3;
+    border-color: #2e844a;
+    border-left: 4px solid #2e844a;
+}
+
+.telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.telemetry-name {
+    font-size: 0.75rem;
+    color: #706e6b;
+}
+
+.telemetry-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #181818;
+    margin-bottom: 0.5rem;
+}
+
+.telemetry-bar-container {
+    height: 4px;
+    background-color: #e5e5e5;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.telemetry-bar {
+    height: 100%;
+    border-radius: 2px;
+}
+
+.telemetry-bar.normal {
+    background-color: #2e844a;
+}
+
+.telemetry-bar.warning {
+    background-color: #fe9339;
+}
+
+.telemetry-bar.critical {
+    background-color: #ba0517;
+}
+
+.telemetry-threshold {
+    font-size: 0.625rem;
+    color: #969492;
+}
+
+/* Reading Status Labels */
+.reading-status {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+}
+
+.reading-status.critical {
+    color: #fff;
+    background-color: #ba0517;
+}
+
+.reading-status.warning {
+    color: #181818;
+    background-color: #fe9339;
+}
+
+.reading-status.normal {
+    color: #fff;
+    background-color: #2e844a;
+}
+
+/* Success Banner */
+.success-banner {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #2e844a 0%, #1a5c2e 100%);
+    color: white;
+    border-radius: 0.25rem;
+}
+
+/* Action Section */
+.action-section {
+    padding-top: 1rem;
+    border-top: 1px solid #e5e5e5;
+}
+
+.action-help-text {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #706e6b;
+}
+
+/* Footer */
+.footer-info {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #706e6b;
+}
+
+/* Modal */
+.slds-modal__container {
+    max-width: 500px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .telemetry-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

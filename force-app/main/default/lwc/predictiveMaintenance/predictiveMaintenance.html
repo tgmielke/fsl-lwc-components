@@ -1,0 +1,172 @@
+<template>
+    <lightning-card title={cardTitle} icon-name={cardIconName}>
+        <!-- Loading state -->
+        <template if:true={isLoading}>
+            <div class="slds-p-around_medium slds-align_absolute-center">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Main content -->
+        <template if:true={hasData}>
+            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+                <!-- Risk Banner for High Risk -->
+                <template if:true={isHighRisk}>
+                    <div class="risk-banner high-risk slds-m-bottom_medium">
+                        <lightning-icon icon-name="utility:warning" size="small" variant="inverse"></lightning-icon>
+                        <span class="slds-m-left_x-small">
+                            <strong>High Failure Risk Detected</strong> — Predicted failure in {daysUntilDisplay}
+                        </span>
+                    </div>
+                </template>
+
+                <!-- Summary Grid -->
+                <div class="summary-grid slds-m-bottom_medium">
+                    <!-- Health Score Gauge -->
+                    <div class="summary-item">
+                        <div class="summary-label">Health Score</div>
+                        <div class={healthScoreClass}>
+                            <div class="health-score-value">{data.healthScore}</div>
+                            <div class="health-score-label">/ 100</div>
+                        </div>
+                    </div>
+
+                    <!-- Predicted Failure Date - Prominent -->
+                    <div class="summary-item">
+                        <div class="summary-label">Predicted Failure</div>
+                        <div class="predicted-failure-display">
+                            <div class={daysUntilClass}>
+                                <span class="days-number">{data.daysUntilFailure}</span>
+                                <span class="days-label">days</span>
+                            </div>
+                            <div class="predicted-date-text">{formattedPredictedDate}</div>
+                        </div>
+                    </div>
+
+                    <!-- Failure Probability -->
+                    <div class="summary-item">
+                        <div class="summary-label">90-Day Failure Risk</div>
+                        <div class="probability-container">
+                            <div class="probability-value">
+                                <span class="probability-number">{data.failureProbability}%</span>
+                                <span class={riskBadgeClass}>{data.riskLevel}</span>
+                            </div>
+                            <div class="probability-bar-container">
+                                <div class={failureProbabilityClass} style={failureProbabilityStyle}></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Recommendation -->
+                <div class="recommendation-box slds-m-bottom_medium">
+                    <div class="recommendation-header">
+                        <lightning-icon icon-name="utility:einstein" size="small"></lightning-icon>
+                        <span class="slds-m-left_x-small"><strong>AI Recommendation</strong></span>
+                    </div>
+                    <div class="recommendation-text">{data.recommendation}</div>
+                </div>
+
+                <!-- Telemetry Data -->
+                <div class="telemetry-section">
+                    <h3 class="section-title">Live Telemetry</h3>
+                    <div class="telemetry-grid">
+                        <template for:each={telemetryReadings} for:item="reading">
+                            <div key={reading.name} class={reading.itemClass}>
+                                <div class="telemetry-header">
+                                    <span class="telemetry-name">{reading.name}</span>
+                                    <span class={reading.statusClass}>{reading.statusLabel}</span>
+                                </div>
+                                <div class="telemetry-value">{reading.displayValue}</div>
+                                <div class="telemetry-bar-container">
+                                    <div class={reading.barClass} style={reading.barStyle}></div>
+                                </div>
+                                <div class="telemetry-threshold">{reading.thresholdDisplay}</div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Work Plan Created Success -->
+                <template if:true={workPlanCreated}>
+                    <div class="success-banner slds-m-top_medium">
+                        <lightning-icon icon-name="utility:success" size="small" variant="inverse"></lightning-icon>
+                        <span class="slds-m-left_x-small">
+                            <strong>Preventive Work Plan Added</strong> — 7-step inspection added to work order
+                        </span>
+                        <lightning-button label="View Work Plan" variant="brand-outline"
+                            onclick={handleViewWorkPlan} class="slds-m-left_medium"></lightning-button>
+                    </div>
+                </template>
+
+                <!-- Action Button -->
+                <template if:true={showAddWorkButton}>
+                    <div class="action-section slds-m-top_medium">
+                        <lightning-button
+                            label="Add Preventive Work to Upcoming Visit"
+                            variant="brand"
+                            icon-name="utility:add"
+                            onclick={handleAddPreventiveWork}
+                            disabled={isCreating}>
+                        </lightning-button>
+                        <p class="action-help-text">
+                            Automatically add an inspection work plan to a technician's upcoming work order at this location.
+                        </p>
+                    </div>
+                </template>
+
+            </div>
+        </template>
+
+        <!-- Footer with data source -->
+        <div slot="footer" class="footer-info">
+            <lightning-icon icon-name="utility:database" size="xx-small"></lightning-icon>
+            <span class="slds-m-left_xx-small">Powered by Data Cloud + Einstein AI</span>
+        </div>
+    </lightning-card>
+
+    <!-- Work Order Selection Modal -->
+    <template if:true={showWorkOrderModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        onclick={handleCloseModal}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-modal__title">Add Preventive Work</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p class="slds-m-bottom_medium">
+                        Select an upcoming work order at this location to add the preventive maintenance work plan:
+                    </p>
+                    <template if:true={hasWorkOrders}>
+                        <lightning-radio-group
+                            name="workOrderSelection"
+                            label="Available Work Orders"
+                            options={workOrderOptions}
+                            value={selectedWorkOrderId}
+                            onchange={handleWorkOrderSelect}
+                            type="button">
+                        </lightning-radio-group>
+                    </template>
+                    <template if:false={hasWorkOrders}>
+                        <p class="slds-text-color_error">No upcoming work orders found at this location.</p>
+                    </template>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={handleCloseModal}></lightning-button>
+                    <lightning-button
+                        label="Add Work Plan"
+                        variant="brand"
+                        onclick={handleConfirmWorkOrder}
+                        disabled={isAddButtonDisabled}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

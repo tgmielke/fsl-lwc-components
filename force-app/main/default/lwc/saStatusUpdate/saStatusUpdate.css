@@ -1,0 +1,216 @@
+/* Status Update LWC - Compact Mobile Layout */
+
+/* Container */
+.status-container {
+    background: #fff;
+    min-height: 100%;
+}
+
+/* Header */
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f4f6f9;
+    border-bottom: 1px solid #d8dde6;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #16325c;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Body */
+.status-body {
+    padding: 12px;
+}
+
+/* Info Section */
+.info-section {
+    background: #f8f9fa;
+    border: 1px solid #d8dde6;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.info-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #16325c;
+}
+
+.info-detail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12px;
+    color: #706e6b;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Current Status Section */
+.current-status-section {
+    text-align: center;
+    padding: 16px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #eef1f6 100%);
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.status-label {
+    font-size: 11px;
+    color: #706e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 18px;
+}
+
+.dependency-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: #fff3cd;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #856404;
+}
+
+/* Action Section */
+.action-section {
+    margin-bottom: 12px;
+}
+
+.action-label {
+    font-size: 11px;
+    color: #706e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.status-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.status-btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Block Section */
+.block-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed #d8dde6;
+}
+
+.block-btn {
+    width: 100%;
+}
+
+/* Spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+}
+
+/* Modal Styling */
+.slds-modal__container {
+    max-width: 90%;
+    width: 400px;
+}
+
+.slds-modal__content {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Dependency Warning */
+.slds-alert_warning {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+}
+
+.dependent-list {
+    background: #f8f9fa;
+    border: 1px solid #d8dde6;
+    border-radius: 4px;
+    padding: 8px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.dependent-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: #16325c;
+    border-bottom: 1px solid #eee;
+}
+
+.dependent-item:last-child {
+    border-bottom: none;
+}
+
+.dep-date {
+    margin-left: auto;
+    color: #706e6b;
+    font-size: 11px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .status-buttons {
+        flex-direction: column;
+    }
+
+    .status-btn {
+        min-width: 100%;
+    }
+}
